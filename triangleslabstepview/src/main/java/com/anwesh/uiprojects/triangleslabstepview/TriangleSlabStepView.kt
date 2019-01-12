@@ -201,4 +201,25 @@ class TriangleSlabStepView(ctx : Context) : View(ctx) {
             curr.startUpdating(cb)
         }
     }
+
+    data class Renderer(var view : TriangleSlabStepView) {
+        private val animator : Animator = Animator(view)
+        private val tss : TriangleSlabStep = TriangleSlabStep(0)
+
+        fun render(canvas : Canvas, paint : Paint) {
+            canvas.drawColor(backColor)
+            tss.draw(canvas, paint)
+            animator.animate {
+                tss.update {i, scl ->
+                    animator.stop()
+                }
+            }
+        }
+
+        fun handleTap() {
+            tss.startUpdating {
+                animator.start()
+            }
+        }
+    }
 }
