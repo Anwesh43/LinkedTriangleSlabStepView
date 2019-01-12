@@ -39,12 +39,15 @@ fun Canvas.clipTrianglePath(size : Float) {
 }
 fun Canvas.drawSlab(x : Float, y : Float, w : Float, h : Float, paint : Paint) {
     save()
-    translate(x, y)
+    translate(x, 0f)
     clipTrianglePath(w)
+    save()
+    translate(0f, y)
     paint.style = Paint.Style.STROKE
     drawRect(-w/2, - h/2, w/2, h/2, paint)
     paint.style = Paint.Style.FILL
     drawRect(-w/2, - h/2, w/2, h/2, paint)
+    restore()
     restore()
 }
 
@@ -59,15 +62,15 @@ fun Canvas.drawTSSNode(i : Int, scale : Float, paint : Paint) {
     paint.color = foreColor
     paint.strokeWidth = Math.min(w, h) / strokeFactor
     paint.strokeCap = Paint.Cap.ROUND
-    val x : Float = (w/2 + size/2 + paint.strokeWidth/2)
-    val yGap : Float = h / slabs
+    val x : Float = (w/2 + size + paint.strokeWidth/2) * sf
+    val yGap : Float = (2 * size) / slabs
     save()
     translate(w/2, gap * (i + 1))
     rotate(180f * sc2)
     for (j in 0..(slabs - 1)) {
         val sc : Float = sc1.divideScale(j, slabs)
         save()
-        drawSlab(x * sc, yGap * (slabs - 1 - j) + yGap / 2, 2 * size, yGap, paint)
+        drawSlab(x * (1 - sc), -size + (yGap * (slabs - 1 - j) + yGap / 2), 2 * size, yGap, paint)
         restore()
     }
     restore()
@@ -194,8 +197,9 @@ class TriangleSlabStepView(ctx : Context) : View(ctx) {
         fun update(cb : (Int, Float) -> Unit) {
             curr.update {i, scl ->
                 curr = curr.getNext(dir) {
-                    cb(i, scl)
+                    dir *= -1
                 }
+                cb(i, scl)
             }
         }
 
@@ -229,7 +233,7 @@ class TriangleSlabStepView(ctx : Context) : View(ctx) {
         fun create(activity : Activity) : TriangleSlabStepView {
             val view : TriangleSlabStepView = TriangleSlabStepView(activity)
             activity.setContentView(view)
-            return view 
+            return view
         }
     }
 }
