@@ -224,4 +224,12 @@ class TriangleSlabStepView(ctx : Context) : View(ctx) {
             }
         }
     }
+
+    companion object {
+        fun create(activity : Activity) : TriangleSlabStepView {
+            val view : TriangleSlabStepView = TriangleSlabStepView(activity)
+            activity.setContentView(view)
+            return view 
+        }
+    }
 }
